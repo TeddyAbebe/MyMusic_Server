@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 
 const SongList = require("./models/Song");
 
-
 // Create express app
 const app = express();
 
@@ -48,28 +47,23 @@ app.get("/read", async (req, res) => {
   }
 });
 
-app.put("/update", async (req, res) => {
-  const id = req.body.id;
-  const newTitle = req.body.newTitle;
-  const newArtist = req.body.newArtist;
-  const newAlbum = req.body.newAlbum;
-  const newGenre = req.body.newGenre;
+app.put("/update/:id", async (req, res) => {
+  const id = req.params.id;
+  const newTitle = req.body.title;
+  const newArtist = req.body.artist;
+  const newAlbum = req.body.album;
+  const newGenre = req.body.genre;
 
   try {
-    try {
-      const updatedSong = await SongList.findById(id);
-      updatedSong.title = newTitle;
-      updatedSong.artist = newArtist;
-      updatedSong.album = newAlbum;
-      updatedSong.genre = newGenre;
-      await updatedSong.save();
-      res.send("updated");
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
-    }
+    const updatedSong = await SongList.findByIdAndUpdate(
+      id,
+      { title: newTitle, artist: newArtist, album: newAlbum, genre: newGenre },
+      { new: true }
+    );
+    res.send(updatedSong);
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
